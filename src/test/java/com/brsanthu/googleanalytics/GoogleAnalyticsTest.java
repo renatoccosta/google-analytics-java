@@ -1,5 +1,6 @@
 package com.brsanthu.googleanalytics;
 
+import com.brsanthu.googleanalytics.internal.ApacheGoogleAnalytics;
 import static org.junit.Assert.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,7 +14,7 @@ public class GoogleAnalyticsTest {
 
 	@BeforeClass
 	public static void setup() {
-		ga = new GoogleAnalytics("UA-44034973-2", "Junit Test", "1.0.0");
+		ga = new ApacheGoogleAnalytics("UA-44034973-2", "Junit Test", "1.0.0");
 		System.out.println("Creating Google Analytis Object");
 	}
 
@@ -63,7 +64,7 @@ public class GoogleAnalyticsTest {
 		final AtomicInteger value = new AtomicInteger();
 		
 		final GoogleAnalyticsConfig config = new GoogleAnalyticsConfig().setMaxThreads(10);
-		new GoogleAnalytics(config, "TrackingId") {
+		new ApacheGoogleAnalytics(config, "TrackingId") {
 			@Override
 			protected int getDefaultMaxPerRoute(GoogleAnalyticsConfig config1) {
 				value.set(super.getDefaultMaxPerRoute(config));
@@ -88,9 +89,9 @@ public class GoogleAnalyticsTest {
 		
 		GoogleAnalyticsResponse response = ga.post(request);
 		
-		assertEquals("foo", response.getPostedParmsAsMap().get("cd1"));
-		assertEquals("bob", response.getPostedParmsAsMap().get("cd2"));
-		assertEquals("alice", response.getPostedParmsAsMap().get("cd5"));
+		assertEquals("foo", response.getPostedParms().get("cd1"));
+		assertEquals("bob", response.getPostedParms().get("cd2"));
+		assertEquals("alice", response.getPostedParms().get("cd5"));
 	}
 
 	@Test
@@ -106,9 +107,9 @@ public class GoogleAnalyticsTest {
 		
 		GoogleAnalyticsResponse response = ga.post(request);
 		
-		assertEquals("foo", response.getPostedParmsAsMap().get("cm1"));
-		assertEquals("bob", response.getPostedParmsAsMap().get("cm2"));
-		assertEquals("alice", response.getPostedParmsAsMap().get("cm5"));
+		assertEquals("foo", response.getPostedParms().get("cm1"));
+		assertEquals("bob", response.getPostedParms().get("cm2"));
+		assertEquals("alice", response.getPostedParms().get("cm5"));
 	}
 
 	@Test
@@ -124,15 +125,15 @@ public class GoogleAnalyticsTest {
 		
 		GoogleAnalyticsResponse response = ga.post(request);
 		
-		assertEquals("1.2.3.5", response.getPostedParmsAsMap().get("uip"));
-		assertEquals("Chrome/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14", response.getPostedParmsAsMap().get("ua"));
+		assertEquals("1.2.3.5", response.getPostedParms().get("uip"));
+		assertEquals("Chrome/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14", response.getPostedParms().get("ua"));
 	}
 	
 	@Test
 	public void testUserDetails() throws Exception {
 		PageViewHit request = new PageViewHit("http://www.google.com", "Search");
 		GoogleAnalyticsResponse response = ga.post(request);
-		assertNotNull(response.getPostedParmsAsMap().get("cid"));
+		assertNotNull(response.getPostedParms().get("cid"));
 
 		DefaultRequest defaultRequest = new DefaultRequest();
 		defaultRequest.clientId("1234");
@@ -141,15 +142,15 @@ public class GoogleAnalyticsTest {
 		
 		request = new PageViewHit("http://www.google.com", "Search");
 		response = ga.post(request);
-		assertEquals("1234", response.getPostedParmsAsMap().get("cid"));
-		assertEquals("user1", response.getPostedParmsAsMap().get("uid"));
+		assertEquals("1234", response.getPostedParms().get("cid"));
+		assertEquals("user1", response.getPostedParms().get("uid"));
 		
 		request = new PageViewHit("http://www.google.com", "Search");
 		request.clientId("12345");
 		request.userId("user2");
 		
 		response = ga.post(request);
-		assertEquals("12345", response.getPostedParmsAsMap().get("cid"));
-		assertEquals("user2", response.getPostedParmsAsMap().get("uid"));
+		assertEquals("12345", response.getPostedParms().get("cid"));
+		assertEquals("user2", response.getPostedParms().get("uid"));
 	}
 }
