@@ -10,7 +10,7 @@ import org.junit.Test;
 
 public class GoogleAnalyticsTest {
 
-	private static GoogleAnalytics ga = null;
+	protected static GoogleAnalytics ga = null;
 
 	@BeforeClass
 	public static void setup() {

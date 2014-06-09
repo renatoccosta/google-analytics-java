@@ -84,6 +84,7 @@ public abstract class GoogleAnalytics {
 
         this.config = config;
         this.defaultRequest = defaultRequest;
+        createClient();
     }
 
     public GoogleAnalyticsConfig getConfig() {
@@ -310,8 +311,11 @@ public abstract class GoogleAnalytics {
         stats = new GoogleAnalyticsStats();
     }
 
+    protected abstract void createClient();
+    
     protected abstract void sendRequest(GoogleAnalyticsResponse response, 
             Map<String, String> postParms) throws IOException;
+    
 }
 
 class GoogleAnalyticsThreadFactory implements ThreadFactory {

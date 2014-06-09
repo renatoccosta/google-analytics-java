@@ -71,8 +71,6 @@ public class ApacheGoogleAnalytics extends GoogleAnalytics {
     public ApacheGoogleAnalytics(GoogleAnalyticsConfig config,
             DefaultRequest defaultRequest) {
         super(config, defaultRequest);
-
-        this.httpClient = createHttpClient(config);
     }
 
     public HttpClient getHttpClient() {
@@ -94,7 +92,8 @@ public class ApacheGoogleAnalytics extends GoogleAnalytics {
         }
     }
 
-    protected CloseableHttpClient createHttpClient(GoogleAnalyticsConfig config) {
+    @Override
+    protected void createClient() {
         PoolingHttpClientConnectionManager connManager
                 = new PoolingHttpClientConnectionManager();
         connManager.setDefaultMaxPerRoute(getDefaultMaxPerRoute(config));
@@ -121,12 +120,12 @@ public class ApacheGoogleAnalytics extends GoogleAnalytics {
             }
         }
 
-        return builder.build();
+        this.httpClient = builder.build();
     }
 
     @Override
     protected void sendRequest(GoogleAnalyticsResponse response,
-            Map<String, String> postParms) throws IOException{
+            Map<String, String> postParms) throws IOException {
         CloseableHttpResponse httpResponse = null;
         try {
             HttpPost httpPost = new HttpPost(config.getUrl());
@@ -139,14 +138,16 @@ public class ApacheGoogleAnalytics extends GoogleAnalytics {
 
             EntityUtils.consumeQuietly(httpResponse.getEntity());
         } finally {
-            httpResponse.close();
+            if (httpResponse != null) {
+                httpResponse.close();
+            }
         }
     }
 
     private List<NameValuePair> convertNameValuePair(Map<String, String> postParms) {
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(
                 postParms.size());
-        
+
         for (Map.Entry<String, String> entry : postParms.entrySet()) {
             nameValuePairs.add(new BasicNameValuePair(
                     entry.getKey(), entry.getValue()));
