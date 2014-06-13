@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.util.Map;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Form;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -67,6 +69,14 @@ public class JaxRsGoogleAnalytics extends GoogleAnalytics {
     @Override
     protected void createClient() {
         this.client = ClientBuilder.newClient();
+        this.client.register(new ClientRequestFilter() {
+            @Override
+            public void filter(ClientRequestContext requestContext)
+                    throws IOException {
+                requestContext.getHeaders().add(HttpHeaders.USER_AGENT,
+                         config.getUserAgent());
+            }
+        });
     }
 
     @Override
